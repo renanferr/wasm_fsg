@@ -39,28 +39,25 @@ func (grid *Grid) Update(gridTime float64) {
 	grid.SpawnDots(1)
 
 	for _, dot := range grid.dots {
-		dir := Vec2D{}
+		fmt.Println(len(grid.dots))
+		// if dot.pos.X < 0 {
+		// 	dot.pos.X = 0
+		// 	dot.dir.X = 0
+		// }
+		// if dot.pos.X > width {
+		// 	dot.pos.X = width
+		// 	dot.dir.X = 0
+		// }
 
-		if dot.pos.X < 0 {
-			dot.pos.X = 0
-			dot.dir.X = 0
-		}
-		if dot.pos.X > width {
-			dot.pos.X = width
-			dot.dir.X = 0
-		}
+		// if dot.pos.Y < 0 {
+		// 	dot.pos.Y = 0
+		// 	dot.dir.Y = 0
+		// }
 
-		if dot.pos.Y < 0 {
-			dot.pos.Y = 0
-			dot.dir.Y = 0
-		}
-
-		if dot.pos.Y > height {
-			dot.pos.Y = height
-			dot.dir.Y = 0
-		}
-
-		dir = dot.dir
+		// if dot.pos.Y > height {
+		// 	dot.pos.Y = height
+		// 	dot.dir.Y = 0
+		// }
 
 		ctx.Call("beginPath")
 		ctx.Set("fillStyle", fmt.Sprintf("#%06x", dot.color))
@@ -85,8 +82,12 @@ func (grid *Grid) Update(gridTime float64) {
 		// 	}
 		// }
 
-		dot.pos.X += dir.X * dot.speed * gridTime
-		dot.pos.Y += dir.Y * dot.speed * gridTime
+		dot.pos.X += dot.dir.X * dot.speed * gridTime
+		dot.pos.Y += dot.dir.Y * dot.speed * gridTime
+
+		// if dot.pos.X <= 0 || dot.pos.X >= width || dot.pos.Y <= 0 || dot.pos.Y >= height {
+		// 	grid.RemoveDot(dot)
+		// }
 	}
 }
 
@@ -138,6 +139,23 @@ func (grid *Grid) SpawnDots(n int) {
 
 func (grid *Grid) setShouldSpawnDots(v bool) {
 	grid.shouldSpawnDots = v
+}
+
+// RemoveDot deletes a given dot from the grid
+func (grid *Grid) RemoveDot(dot *Dot) {
+	i := 0
+
+	for _, d := range grid.dots {
+		if d != dot {
+			grid.dots[i] = d
+			i++
+		}
+	}
+	grid.dots = grid.dots[:i]
+	// copy(grid.dots[i:], grid.dots[i+1:]) // Shift grid.dots[i+1:] left one index.
+	// grid.dots[len(grid.dots)-1] = nil    // Erase last element (write zero value).
+	// grid.dots = grid.dots[:len(grid.dots)-1]
+	// return *grid
 }
 
 // Dot represents a dot
