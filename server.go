@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 func main() {
-	fmt.Println("Server started")
-	http.ListenAndServe(`:8080`, http.FileServer(http.Dir(`./public`)))
+	fmt.Println("Server starting")
+	http.ListenAndServe(`:8080`, http.Handler(http.FileServer(http.Dir("./public"))))
 }

@@ -12,9 +12,9 @@
 				go.run(res.instance)	
 			})
 			window.onload = function () {
-				linkRange('count','count-value')
-				linkRange('speed','speed-value')
-				linkRange('size','size-value')
+				// linkRange('count','count-value')
+				linkRange('gravity','gravity-value')
+				// linkRange('size','size-value')
 
 				// Go code background
 				// fetch('main.go').then( res=> res.text()).then(res => {
@@ -66,9 +66,9 @@ body,pre { margin:0;padding:0; }
 		<div class="control">
 			<div id="fps">0</div>
 			<div class="control-group">
-				<label>Speed</label><input id="speed" type="range" min="10" max="1000" value="160"> <span id="speed-value"> 160</span>
+				<label>Gravity</label><input id="gravity" type="range" min="0" max="10" value="1"> <span id="gravity-value"> 1</span>
 			</div>
-			<div class="control-group">
+			<!-- <div class="control-group">
 				<label>Number of dots</label><input id="count" type="range" min="10" max="1000" value="100"> <span id="count-value"> 100</span>
 			</div>
 			<div class="control-group">
@@ -79,7 +79,7 @@ body,pre { margin:0;padding:0; }
 			</div>
 			<div class="control-group">
 				<label>dashed</label><input id="dashed" type="checkbox">
-			</div>
+			</div> -->
 		</div>
 	</body>
 </html>
