@@ -1,24 +1,27 @@
 <html>
-	<head>
-		<title>go webassembly - bouncy</title>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css">
-		<link rel="stylesheet" href="styles.css">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
-		<script src="wasm_exec.js"></script>
-		<script src="setup.js"></script>
-	</head>
-	<body>
-		<div class="code">
-			<pre><code id="code"></code></pre>
+
+<head>
+	<title>go webassembly - falling sand game</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css">
+	<link rel="stylesheet" href="styles.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+	<script src="wasm_exec.js"></script>
+	<script src="setup.js"></script>
+</head>
+
+<body>
+	<div class="code">
+		<pre><code id="code"></code></pre>
+	</div>
+	<canvas id="glCanvas" width="640" height="480"></canvas>
+	<div class="control">
+		<div id="fps">0</div>
+		<div class="control-group">
+			<label>Gravity</label><input id="gravity" type="range" min="0" max="10" value="1"> <span id="gravity-value">
+				1</span>
 		</div>
-		<canvas id="mycanvas"></canvas>
-		<div class="control">
-			<div id="fps">0</div>
-			<div class="control-group">
-				<label>Gravity</label><input id="gravity" type="range" min="0" max="10" value="1"> <span id="gravity-value"> 1</span>
-			</div>
-			<!-- <div class="control-group">
+		<!-- <div class="control-group">
 				<label>Number of dots</label><input id="count" type="range" min="10" max="1000" value="100"> <span id="count-value"> 100</span>
 			</div>
 			<div class="control-group">
@@ -30,6 +33,7 @@
 			<div class="control-group">
 				<label>dashed</label><input id="dashed" type="checkbox">
 			</div> -->
-		</div>
-	</body>
+	</div>
+</body>
+
 </html>

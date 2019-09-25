@@ -82,12 +82,14 @@ func (grid *Grid) Update(gridTime float64) {
 		// 	}
 		// }
 
+		dot.SetGravity(grid.gravity)
+
 		dot.pos.X += dot.dir.X * dot.speed * gridTime
 		dot.pos.Y += dot.dir.Y * dot.speed * gridTime
 
-		// if dot.pos.X <= 0 || dot.pos.X >= width || dot.pos.Y <= 0 || dot.pos.Y >= height {
-		// 	grid.RemoveDot(dot)
-		// }
+		if dot.pos.Y >= width {
+			grid.RemoveDot(dot)
+		}
 	}
 }
 
@@ -167,6 +169,14 @@ type Dot struct {
 	speed float64
 }
 
+// SetGravity sets dot gravity
+func (d *Dot) SetGravity(v float64) {
+	d.dir = Vec2D{
+		X: 0,
+		Y: v,
+	}
+}
+
 // Vec2D represents a 2D Vector
 type Vec2D struct {
 	X float64
@@ -177,7 +187,7 @@ func main() {
 
 	// Init Canvas stuff
 	doc := js.Global().Get("document")
-	canvasEl := doc.Call("getElementById", "mycanvas")
+	canvasEl := doc.Call("getElementById", "glCanvas")
 	width = doc.Get("body").Get("clientWidth").Float()
 	height = doc.Get("body").Get("clientHeight").Float()
 	canvasEl.Set("width", width)

@@ -1,11 +1,7 @@
 hljs.configure({ tabReplace: '  ' });
 
 const go = new Go();
-
-WebAssembly.instantiateStreaming(fetch('main.wasm'), go.importObject)
-    .then(res => {
-        go.run(res.instance)
-    })
+var gl
 
 window.onload = function () {
     // linkRange('count','count-value')
@@ -20,7 +16,14 @@ window.onload = function () {
     // 												.replace(/</g,"&lt;") 
     // 	hljs.highlightBlock(codeEl)
     // })
+    
+
+    WebAssembly.instantiateStreaming(fetch('main.wasm'), go.importObject)
+    .then(res => {
+        go.run(res.instance)
+    })
 }
+
 function linkRange(id, idValue) {
     let El = document.getElementById(id)
     let valEl = document.getElementById(idValue)
