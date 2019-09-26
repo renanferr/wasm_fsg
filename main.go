@@ -103,8 +103,8 @@ func (grid *Grid) SetNDots(n int) {
 				rand.Float64() * height,
 			},
 			dir: Vec2D{
-				rand.NormFloat64(),
-				grid.gravity * -1,
+				0,
+				grid.gravity,
 			},
 			color: uint32(rand.Intn(0xFFFFFF)),
 			size:  10,
@@ -154,10 +154,6 @@ func (grid *Grid) RemoveDot(dot *Dot) {
 		}
 	}
 	grid.dots = grid.dots[:i]
-	// copy(grid.dots[i:], grid.dots[i+1:]) // Shift grid.dots[i+1:] left one index.
-	// grid.dots[len(grid.dots)-1] = nil    // Erase last element (write zero value).
-	// grid.dots = grid.dots[:len(grid.dots)-1]
-	// return *grid
 }
 
 // Dot represents a dot
@@ -185,7 +181,6 @@ type Vec2D struct {
 
 func main() {
 
-	// Init Canvas stuff
 	doc := js.Global().Get("document")
 	canvasEl := doc.Call("getElementById", "glCanvas")
 	width = doc.Get("body").Get("clientWidth").Float()
@@ -197,7 +192,6 @@ func main() {
 	grid := Grid{gravity: 1, size: 1, shouldSpawnDots: false}
 
 	mouseDownEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		// e := args[0]
 		grid.setShouldSpawnDots(true)
 		return nil
 	})
@@ -318,5 +312,4 @@ func main() {
 	js.Global().Call("requestAnimationFrame", renderFrame)
 
 	<-done
-
 }
