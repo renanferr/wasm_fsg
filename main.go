@@ -1,4 +1,3 @@
-// compile: GOOS=js GOARCH=wasm go build -o main.wasm ./main.go
 package main
 
 import (
@@ -6,11 +5,12 @@ import (
 	"strconv"
 	"syscall/js"
 
-	"github.com/renanferr/wasm_fsg/structs"
+	. "github.com/renanferr/wasm_fsg/scene"
+	. "github.com/renanferr/wasm_fsg/utils"
 )
 
 var (
-	mousePos   structs.Vec2D
+	mousePos   *Vec2D
 	ctx        js.Value
 	lineDistSq float64 = 100 * 100
 )
@@ -18,56 +18,42 @@ var (
 func main() {
 
 	doc := js.Global().Get("document")
-	// width :=
-	// height :=
-	grid := structs.Grid{
-		Gravity:         1,
-		Size:            1,
-		ShouldSpawnDots: false,
-		Width:           doc.Get("body").Get("clientWidth").Float(),
-		Height:          doc.Get("body").Get("clientHeight").Float(),
-	}
+
+	// scene := structs.Grid{
+	// 	Gravity:         1,
+	// 	Size:            1,
+	// 	ShouldSpawnDots: false,
+	// }
 	canvasEl := doc.Call("getElementById", "glCanvas")
-	canvasEl.Set("width", grid.Width)
-	canvasEl.Set("height", grid.Height)
-	ctx = canvasEl.Call("getContext", "2d")
-	grid.Ctx = ctx
+	canvasEl.Set("height", doc.Get("body").Get("clientHeight").Float())
+	canvasEl.Set("width", doc.Get("body").Get("clientWidth").Float())
+	scene := NewScene(
+		canvasEl.Get("height").Float(),
+		canvasEl.Get("width").Float(),
+		canvasEl.Call("getContext", "2d"),
+	)
+
 	done := make(chan struct{}, 0)
 
 	mouseDownEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		grid.SetShouldSpawnDots(true)
+		scene.SetShouldSpawnDots(true)
 		return nil
 	})
 	defer mouseDownEvt.Release()
 
 	mouseMoveEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		e := args[0]
-		mousePos.X = e.Get("clientX").Float()
-		mousePos.Y = e.Get("clientY").Float()
+		mousePos = NewVec2D(e.Get("clientX").Float(), e.Get("clientY").Float())
 		return nil
 	})
 	defer mouseMoveEvt.Release()
 
 	mouseUpEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		grid.SetShouldSpawnDots(false)
+		scene.SetShouldSpawnDots(false)
 		return nil
 	})
 	defer mouseUpEvt.Release()
 
-	// Event handler for count range
-	// countChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-	// 	evt := args[0]
-	// 	intVal, err := strconv.Atoi(evt.Get("target").Get("value").String())
-	// 	if err != nil {
-	// 		println("Invalid value", err)
-	// 		return nil
-	// 	}
-	// 	grid.SetNDots(intVal)
-	// 	return nil
-	// })
-	// defer countChangeEvt.Release()
-
-	// Event handler for speed range
 	gravityInputEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		evt := args[0]
 		fval, err := strconv.ParseFloat(evt.Get("target").Get("value").String(), 64)
@@ -75,39 +61,38 @@ func main() {
 			println("invalid value", err)
 			return nil
 		}
-		grid.Gravity = fval
+		scene.SetGravity(fval)
 		return nil
 	})
 	defer gravityInputEvt.Release()
 
-	// Event handler for size
-	sizeChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		evt := args[0]
-		intVal, err := strconv.Atoi(evt.Get("target").Get("value").String())
-		if err != nil {
-			println("invalid value", err)
-			return nil
-		}
-		grid.Size = intVal
-		return nil
-	})
-	defer sizeChangeEvt.Release()
+	// sizeChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+	// 	evt := args[0]
+	// 	intVal, err := strconv.Atoi(evt.Get("target").Get("value").String())
+	// 	if err != nil {
+	// 		println("invalid value", err)
+	// 		return nil
+	// 	}
+	// 	scene.Size = intVal
+	// 	return nil
+	// })
+	// defer sizeChangeEvt.Release()
 
 	// Event handler for lines toggle
-	lineChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		evt := args[0]
-		grid.Lines = evt.Get("target").Get("checked").Bool()
-		return nil
-	})
-	defer lineChangeEvt.Release()
+	// lineChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+	// 	evt := args[0]
+	// 	scene.Lines = evt.Get("target").Get("checked").Bool()
+	// 	return nil
+	// })
+	// defer lineChangeEvt.Release()
 
-	// Event handler for dashed toggle
-	dashedChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		evt := args[0]
-		grid.Dashed = evt.Get("target").Get("checked").Bool()
-		return nil
-	})
-	defer dashedChangeEvt.Release()
+	// // Event handler for dashed toggle
+	// dashedChangeEvt := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+	// 	evt := args[0]
+	// 	scene.Dashed = evt.Get("target").Get("checked").Bool()
+	// 	return nil
+	// })
+	// defer dashedChangeEvt.Release()
 
 	doc.Call("addEventListener", "mousedown", mouseDownEvt)
 	doc.Call("addEventListener", "mouseup", mouseUpEvt)
@@ -118,8 +103,8 @@ func main() {
 	// doc.Call("getElementById", "dashed").Call("addEventListener", "change", dashedChangeEvt)
 	// doc.Call("getElementById", "lines").Call("addEventListener", "change", lineChangeEvt)
 
-	grid.SetNDots(0)
-	grid.Lines = false
+	scene.SetNDots(0)
+	// scene.Lines = false
 	var renderFrame js.Func
 	var tmark float64
 	var markCount = 0
@@ -139,16 +124,16 @@ func main() {
 		// Pull window size to handle resize
 		curBodyW := doc.Get("body").Get("clientWidth").Float()
 		curBodyH := doc.Get("body").Get("clientHeight").Float()
-		if curBodyW != grid.Width || curBodyH != grid.Height {
-			grid.Width = curBodyW
-			grid.Height = curBodyH
-			canvasEl.Set("width", grid.Width)
-			canvasEl.Set("height", grid.Height)
+		if curBodyW != scene.Width || curBodyH != scene.Height {
+			scene.Width = curBodyW
+			scene.Height = curBodyH
+			canvasEl.Set("width", scene.Width)
+			canvasEl.Set("height", scene.Height)
 		}
 
-		grid.MousePos = mousePos
+		scene.SetMousePos(mousePos)
 
-		grid.Update(tdiff / 1000)
+		scene.Update(tdiff / 1000)
 
 		js.Global().Call("requestAnimationFrame", renderFrame)
 		return nil

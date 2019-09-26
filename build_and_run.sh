@@ -1,3 +1,3 @@
 #!/bin/sh
-source build.sh \
+./build.sh \
     && go run server.go
