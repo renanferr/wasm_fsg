@@ -1,7 +1,5 @@
 package utils
 
-import "fmt"
-
 // Vec2D represents a 2D Vector
 type Vec2D struct {
 	X float64
@@ -16,7 +14,6 @@ func NewVec2D(X float64, Y float64) *Vec2D {
 }
 
 func (v *Vec2D) SetX(X float64) {
-	fmt.Println(X)
 	v.X = X
 }
 

@@ -103,7 +103,6 @@ func main() {
 	// doc.Call("getElementById", "dashed").Call("addEventListener", "change", dashedChangeEvt)
 	// doc.Call("getElementById", "lines").Call("addEventListener", "change", lineChangeEvt)
 
-	scene.SetNDots(0)
 	// scene.Lines = false
 	var renderFrame js.Func
 	var tmark float64
@@ -133,7 +132,7 @@ func main() {
 
 		scene.SetMousePos(mousePos)
 
-		scene.Update(tdiff / 1000)
+		scene.Update(tdiff/1000, doc)
 
 		js.Global().Call("requestAnimationFrame", renderFrame)
 		return nil

@@ -1,6 +1,8 @@
 package scene
 
 import (
+	"fmt"
+
 	. "github.com/renanferr/wasm_fsg/utils"
 )
 
@@ -19,7 +21,7 @@ func NewDot(pos *Vec2D, dir *Vec2D, color uint32) *Dot {
 	d.dir = dir
 	d.color = color
 	d.size = float64(1)
-	d.speed = float64(1)
+	d.speed = float64(10)
 	return d
 }
 
@@ -33,6 +35,15 @@ func (d *Dot) GetDirection() Vec2D {
 
 func (d *Dot) SetPosition(X float64, Y float64) {
 	d.pos.SetX(X)
+	d.pos.SetY(Y)
+}
+
+func (d *Dot) SetPositionX(X float64) {
+	d.pos.SetX(X)
+}
+
+func (d *Dot) SetPositionY(Y float64) {
+	fmt.Println(Y)
 	d.pos.SetY(Y)
 }
 

@@ -57,7 +57,7 @@ func (s *Scene) SetMousePos(pos *Vec2D) {
 }
 
 // Update updates the dot positions and draws
-func (s *Scene) Update(gridTime float64) {
+func (s *Scene) Update(gridTime float64, doc js.Value) {
 	if s.dots == nil {
 		return
 	}
@@ -65,16 +65,33 @@ func (s *Scene) Update(gridTime float64) {
 	s.ctx.Set("fillStyle", "rgb(0,0,0)")
 	s.ctx.Call("fillRect", 0, 0, s.Width, s.Height)
 
-	s.SpawnDots(1, s.mousePos)
+	if s.ShouldSpawnDots {
+		s.SpawnDots(1, s.mousePos)
+	}
 
 	for _, dot := range s.dots {
+		// fmt.Println(dot.GetY())
+
+		fmt.Println("Running animation frame")
+
+		dot.SetDirection(s.gravity)
+
+		dotDirection := dot.GetDirection()
+		newX := dot.GetX() + (dotDirection.X * dot.speed * gridTime)
+		newY := dot.GetY() + (dotDirection.Y * dot.speed * gridTime)
+		dot.SetPositionX(newX)
+		dot.SetPositionY(newY)
+
 		s.ctx.Call("beginPath")
 		s.ctx.Set("fillStyle", fmt.Sprintf("#%06x", dot.color))
 		s.ctx.Set("strokeStyle", fmt.Sprintf("#%06x", dot.color))
 
-		// s.ctx.Set("lineWigridh", s.size)
 		s.ctx.Call("arc", dot.GetX(), dot.GetY(), 1, 0, 2*math.Pi)
 		s.ctx.Call("fill")
+
+		if dot.GetY() >= s.Width {
+			s.RemoveDot(dot)
+		}
 
 		// if s.lines {
 		// 	for _, dot2 := range s.dots[i+1:] {
@@ -91,17 +108,15 @@ func (s *Scene) Update(gridTime float64) {
 		// 	}
 		// }
 
-		dot.SetDirection(s.gravity)
-		fmt.Println(dot.GetDirection().X, dot.GetDirection().Y)
-
-		dot.SetPosition(dot.GetDirection().X*dot.speed*gridTime, dot.GetDirection().Y*dot.speed*gridTime)
-
 		// dot.pos.X +=
 		// dot.pos.Y +=
 
-		if dot.GetY() >= s.Width {
-			s.RemoveDot(dot)
-		}
+		// dot.SetPosition(
+		// 	dot.GetX()+(dot.GetDirection().X*dot.speed*gridTime),
+		// 	dot.GetY()+(dot.GetDirection().Y*dot.speed*gridTime),
+		// )
+		// fmt.Println(dot.GetDirection().X, dot.GetDirection().Y)
+
 	}
 }
 
@@ -125,10 +140,8 @@ func (s *Scene) GetNDots() int {
 // SpawnDots spawns dots given n number of dots in mouse position
 func (s *Scene) SpawnDots(n int, pos *Vec2D) {
 
-	if s.ShouldSpawnDots {
-		for i := 0; i < n; i++ {
-			s.dots = append(s.dots, NewDot(pos, s.GetGravity(), uint32(rand.Intn(0xFFFFFF))))
-		}
+	for i := 0; i < n; i++ {
+		s.dots = append(s.dots, NewDot(pos, s.GetGravity(), uint32(rand.Intn(0xFFFFFF))))
 	}
 }
 
@@ -147,4 +160,10 @@ func (s *Scene) RemoveDot(dot *Dot) {
 		}
 	}
 	s.dots = s.dots[:i]
+}
+
+// RequestAnimationFrame binds Javascript requestAnimationFrame function to go runtime machine
+func (s *Scene) RequestAnimationFrame(jsCallback js.Func) {
+	fmt.Println("Requesting animation frame")
+	js.Global().Get("window").Call("requestAnimationFrame", jsCallback)
 }
